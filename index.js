@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const passwordHash = require('password-hash');
 const validator = require('validator');
-const dbConnect = require('./config/db');
+//const dbConnect = require('./config/db');
 const users = require('./routes/users');
 const cors = require('./middleware/cors');
 
@@ -17,6 +17,7 @@ app.use(express.static('public'));
 
 app.use('./middleware/cors', cors);
 app.use('/api/users', users);
+
 
 
 
