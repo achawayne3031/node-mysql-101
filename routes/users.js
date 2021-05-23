@@ -2,7 +2,8 @@
 const fs = require('fs');
 const express = require('express');
 const { validateData, readFileFunc, writeFileFunc, 
-    validateLoginData, generateRandom, startTimer, superChargeRandom } = require('../func/func_helper');
+    validateLoginData, generateRandom, startTimer, 
+    superChargeRandom, validateSetPassword } = require('../func/func_helper');
 
 const json_encode = require('json_encode');
 const passwordHash = require('password-hash');
@@ -27,7 +28,6 @@ router.post('/login', (req, res) => {
             status: 404,
             message: error.message
         });
-        return;
     }
 
 
@@ -58,9 +58,24 @@ router.get('/reset-password/:token', verifyPasswordToken, (req, res) => {
 });
 
 
-router.post('set-password', (req, res) => {
+router.post('/set-password', (req, res) => {
 
-    
+    const { error } = validateSetPassword(req.body);
+    if(error)
+        res.status(404).json({
+            success: false,
+            status: 404,
+            message: error.message
+        });
+    else
+        var token = req.body.token;
+        var password = passwordHash.generate(req.body.password);
+        var result = database.query("UPDATE `users` SET `password` = '"+password+"' WHERE `reset_password_token` = '"+token+"'");
+        res.status(404).json({
+            success: true,
+            status: 200,
+            message: result
+        });
 
 });
 
@@ -81,7 +96,7 @@ router.post('/forgot-password', (req, res) =>{
            
                 mailer.sendMail(url, email).then(
                     result => {
-                       // startTimer(email, 20);
+                       startTimer(email, 20);
                         res.status(200).json({
                             success: true,
                             status: 200,
@@ -151,6 +166,7 @@ router.post('/register', (req, res) => {
                         var updateSql = "UPDATE users SET token = '"+accessToken+"' WHERE id = '"+id+"'";
                         database.query(updateSql).then(
                             result => {
+
                                 database.query("SELECT * FROM `users` WHERE id ="+ id).then(
                                     result => {
                                         res.status(200).json({

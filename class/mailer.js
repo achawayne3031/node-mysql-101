@@ -38,7 +38,7 @@ class Mailer{
             to: email,
             subject: "Node Mysql Forgot Password",
             text: "",
-            html: "<h4>Forgot Password</h4><p>Link is valid for 20 seconds</p><a href='"+url+"'>Click here to reset password</a>"
+            html: "<h4>Forgot Password</h4><p>Link is valid for 20 minutes</p><a href='"+url+"'>Click here to reset password</a>"
           };
 
         let info = await this.transporter.sendMail(message);

@@ -13,7 +13,7 @@
         const schema = Joi.object().keys({
             name: Joi.string().required(),
             email: Joi.string().email().required(),
-            password: Joi.string().required(),
+            password: Joi.string().required(8),
             phone: Joi.number().required(),
         });
         return Joi.validate(data, schema);
@@ -27,6 +27,14 @@
         return Joi.validate(data, schema);
     }
 
+    const validateSetPassword = (data) => {
+        const schema = Joi.object().keys({
+            password: Joi.string().required().min(8),
+            token: Joi.string().required()
+        });
+        return Joi.validate(data, schema);
+    }
+
 
     readFileFunc = (filePath) => {
         fs.readFile(filePath, function(err, data){
@@ -35,10 +43,6 @@
             }else{
                 return JSON.parse(data);
             }
-            // else
-            //     console
-            //    return data;
-            // endif
 
         });
     }
@@ -64,7 +68,7 @@
 
 
    function startTimer(email, mins){
-       let time = mins * 1000;
+       let time = mins * 10000;
         setTimeout(() => {
             database.query("UPDATE `users` SET reset_password_token = '' WHERE email = '"+email+"'");
         }, time);
@@ -78,5 +82,6 @@
         validateLoginData: validateLoginData,
         generateRandom: generateRandom,
         startTimer: startTimer,
-        superChargeRandom: superChargeRandom
+        superChargeRandom: superChargeRandom,
+        validateSetPassword: validateSetPassword
     };
