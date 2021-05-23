@@ -17,17 +17,25 @@
   },
   "homepage": "https://github.com/achawayne3031/node-mysql-101#readme",
   "dependencies": {
+    "@supercharge/strings": "^1.18.0",
     "cor": "0.0.0",
+    "crypto": "^1.0.1",
     "dotenv": "^9.0.2",
     "express": "^4.17.1",
     "helmet": "^4.2.0",
     "joi": "^13.1.0",
     "joi-phone-number": "^5.0.1",
+    "json-decode": "^1.0.0",
     "json-encode": "^1.0.1",
     "json_encode": "^0.1.0",
     "jsonwebtoken": "^8.5.1",
+    "mailer": "^0.6.7",
     "mysql": "^2.18.1",
+    "mysql-async-simple": "^1.0.3",
+    "mysql2": "^2.2.5",
+    "nodemailer": "^6.6.0",
     "password-hash": "^1.2.2",
+    "util": "^0.12.3",
     "validator": "^13.6.0"
   }
 }

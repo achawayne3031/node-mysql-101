@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const passwordHash = require('password-hash');
 const validator = require('validator');
-//const dbConnect = require('./config/db');
+const dbConnect = require('./config/init');
 const users = require('./routes/users');
 const cors = require('./middleware/cors');
 
