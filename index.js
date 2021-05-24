@@ -7,15 +7,21 @@ const passwordHash = require('password-hash');
 const validator = require('validator');
 const dbConnect = require('./config/init');
 const users = require('./routes/users');
-const cors = require('./middleware/cors');
+//const cors = require('./middleware/cors');
+
+const cors = require('cors')
+ 
 
 var app = express();
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use(cors());;
 
-app.use('./middleware/cors', cors);
+
+
+//app.use('./middleware/cors', cors);
 app.use('/api/users', users);
 
 

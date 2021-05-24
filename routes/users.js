@@ -20,7 +20,6 @@ const verifyPasswordToken = require('../middleware/user-reset-password');
 const router = express.Router();
 
 router.post('/login', (req, res) => {
-
     const { error } = validateLoginData(req.body);
     if(error){
         res.status(404).json({
@@ -30,14 +29,51 @@ router.post('/login', (req, res) => {
         });
     }
 
-
     database.query("SELECT * FROM users WHERE email ='"+req.body.email+"'").then(
         result => { 
-            res.status(200).json({
-                success: true,
-                status: 200,
-                data: result
-            });  
+            var isEmpty = Object.keys(result).length;
+            if(isEmpty == 0){
+                res.status(404).json({
+                    success: false,
+                    status: 404,
+                    data: "Email Not registered"
+                }); 
+
+            }else{
+                dbPassword = result[0].password;
+                id = result[0].id;
+                var verify = passwordHash.verify(req.body.password, dbPassword);
+                if(verify){
+                    var accessToken = database.setToken(id);
+                    var updateSql = "UPDATE users SET token = '"+accessToken+"' WHERE id = '"+id+"'";
+                    database.query(updateSql).then(
+                        result => {
+                            database.query("SELECT * FROM `users` WHERE id ="+ id).then(
+                                result => {
+                                    res.status(200).json({
+                                        success: true,
+                                        status: 200,
+                                        data: result
+                                    });
+                                }
+                            )
+
+                        }
+                    )
+
+                    // res.status(200).json({
+                    //     success: true,
+                    //     status: 200,
+                    //     data: result
+                    // });  
+                }else{
+                    res.status(404).json({
+                        success: false,
+                        status: 404,
+                        data: "Incorrect credentials"
+                    });  
+                }
+            }
         }
     );
     
@@ -59,7 +95,6 @@ router.get('/reset-password/:token', verifyPasswordToken, (req, res) => {
 
 
 router.post('/set-password', (req, res) => {
-
     const { error } = validateSetPassword(req.body);
     if(error)
         res.status(404).json({
@@ -70,12 +105,25 @@ router.post('/set-password', (req, res) => {
     else
         var token = req.body.token;
         var password = passwordHash.generate(req.body.password);
-        var result = database.query("UPDATE `users` SET `password` = '"+password+"' WHERE `reset_password_token` = '"+token+"'");
-        res.status(404).json({
-            success: true,
-            status: 200,
-            message: result
-        });
+        database.query("UPDATE `users` SET `password` = '"+password+"' WHERE `reset_password_token` = '"+token+"'").then(
+            result => {
+                res.status(200).json({
+                    success: true,
+                    status: 200,
+                    message: result
+                });
+
+            },
+            err => {
+                res.status(404).json({
+                    success: false,
+                    status: 404,
+                    message: "Token Has Expired"
+                });
+
+            }
+        );
+        
 
 });
 
@@ -84,7 +132,6 @@ router.post('/set-password', (req, res) => {
 
 router.post('/forgot-password', (req, res) =>{
     var email = req.body.email;
-
     let token = superChargeRandom();
     let url = "https://node-mysql/users/reset-password/"+token;
 
@@ -113,8 +160,6 @@ router.post('/forgot-password', (req, res) =>{
                 );
             
             }
-
-            
         },
         err => {
             res.status(404).json({

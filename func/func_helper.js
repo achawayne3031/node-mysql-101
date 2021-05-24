@@ -23,6 +23,7 @@
         const schema = Joi.object().keys({
             email: Joi.string().email().required(),
             password: Joi.string().required(),
+            remember_me: Joi.boolean()
         });
         return Joi.validate(data, schema);
     }
